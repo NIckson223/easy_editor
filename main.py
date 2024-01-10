@@ -4,7 +4,9 @@ from PyQt5.QtWidgets import (
                     )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PIL import Image
+
+from PIL import (Image, ImageFilter, ImageEnhance)
+from PIL.ImageFilter import (SHARPEN, BLUR)
 import os
 
 app=QApplication([])
@@ -88,7 +90,25 @@ class ImageProcessor():
         self.image = self.image.convert("L")
         self.saveImage()
         image_path = os.path.join(os.getcwd(),self.save_dir,self.filename)
+        self.showImage(image_path)
+
+    def do_mirror(self):
+        self.image = self.image.transpose(Image.FLIP_LEFT_RIGHT)
         self.saveImage()
+        image_path = os.path.join(os.getcwd(), self.save_dir, self.filename)
+        self.showImage(image_path)
+
+    def do_left(self):
+        self.image=self.image.transpose(Image.ROTATE_90)
+        self.saveImage()
+        image_path = os.path.join(os.getcwd(), self.save_dir, self.filename)
+        self.showImage(image_path)
+
+    def do_sharpen(self):
+        self.image=self.image.filter(SHARPEN)
+        self.saveImage()
+        image_path = os.path.join(os.getcwd(), self.save_dir, self.filename)
+        self.showImage(image_path)
 
     def showImage(self,path):
         lb_image.hide()
@@ -111,4 +131,6 @@ workimage = ImageProcessor()
 list_files.currentRowChanged.connect(showChosenImage)
 btn_bw.clicked.connect(workimage.do_bw)
 btn_dir.clicked.connect(showFileList)
+btn_flip.clicked.connect(workimage.do_mirror)
+btn_sharp.clicked.connect(workimage.do_sharpen)
 app.exec_()
